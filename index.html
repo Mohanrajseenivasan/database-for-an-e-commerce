@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Product Form</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .product-list {
+            margin-top: 2rem;
+            text-align: left;
+            width: 100%;
+            max-width: 400px;
+        }
+        .product-list p {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        .product-list p:hover {
+            transform: translateY(-2px);
+        }
+        .product-list b {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Add Product</h2>
+        <input type="text" id="name" placeholder="Product Name">
+        <input type="number" id="price" placeholder="Price">
+        <input type="text" id="description" placeholder="Description">
+        <button onclick="addProduct()">Add Product</button>
+    </div>
+
+    <div class="container product-list" id="productList">
+        <h2>Product List</h2>
+    </div>
+
+    <script>
+        async function addProduct() {
+            const name = document.getElementById("name").value;
+            const price = document.getElementById("price").value;
+            const description = document.getElementById("description").value;
+
+            const response = await fetch("http://localhost:5000/add-product", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, price, description })
+            });
+
+            const result = await response.json();
+            alert(result.message);
+            fetchProducts(); // Refresh product list
+        }
+
+        async function fetchProducts() {
+            const response = await fetch("http://localhost:5000/products");
+            const products = await response.json();
+
+            const productList = document.getElementById("productList");
+            productList.innerHTML = "<h2>Product List</h2>";
+            products.forEach(product => {
+                productList.innerHTML += `<p><b>${product.name}</b> - $${product.price} <br> ${product.description}</p>`;
+            });
+        }
+
+        fetchProducts(); // Load products on page load
+    </script>
+
+</body>
+</html>
